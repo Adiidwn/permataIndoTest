@@ -1,8 +1,8 @@
-import { Box, Button, Checkbox, Card } from "@chakra-ui/react";
+import { Box, Button, Checkbox, IconButton } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import PopupTask from "./createTask";
+import { AiOutlineClose } from "react-icons/ai";
 import { Api } from "../libs/api";
-import { get } from "mongoose";
+import PopupTask, { FormData } from "./createTask";
 
 export default function MiddleBar() {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -21,8 +21,8 @@ export default function MiddleBar() {
     // Close the popup after submission
     closePopup();
   };
-  const [tasks, setTask] = useState([]);
-  const getTask = async (data: FormData) => {
+  const [tasks, setTask] = useState<FormData[]>([]);
+  const getTask = async () => {
     try {
       const response = await Api.get("/task");
       const data = response.data;
@@ -33,8 +33,8 @@ export default function MiddleBar() {
     }
   };
   useEffect(() => {
-    getTask(data);
-  }, []);
+    getTask();
+  }, [isPopupOpen]);
   return (
     <>
       <Box
@@ -56,31 +56,44 @@ export default function MiddleBar() {
         </Box>
         {/* Maping here */}
         {tasks.map((task) => (
-          <div key={task._id}>
-            <Card>
-              <p>Description: {task.description}</p>
-              <p>Status: {task.status ? "Completed" : "Not Completed"}</p>
-              <p>Category: {task.category}</p>
-              <p>Created At: {task.createdAt}</p>
-            </Card>
-          </div>
+          <>
+            <div key={task._id}>
+              <Box
+                boxSize={"100%"}
+                display={"flex"}
+                flex={"column"}
+                alignItems={"center"}
+                gap={10}
+              >
+                <Checkbox mb={"10px"} size={"lg"}>
+                  <h1>{task.description}</h1>
+                </Checkbox>
+                <p hidden>
+                  Status: {task.status ? "Completed" : "Not Completed"}
+                </p>
+                <h1
+                  style={{
+                    backgroundColor: "red",
+                    border: "1px solid red",
+                    color: "white",
+                    borderRadius: "10px",
+                    padding: "5px",
+                    fontSize: "15px",
+                  }}
+                >
+                  {task.category}
+                </h1>
+                <IconButton icon={<AiOutlineClose />} size={"10px"} />
+              </Box>
+              {/* <Card>
+                <p>Description: {task.description}</p>
+                
+                <p>Category: {task.category}</p>
+                <p hidden>Created At: {task.createdAt}</p>
+              </Card> */}
+            </div>
+          </>
         ))}
-        <Box boxSize={"100%"} display={"flex"} flex={"column"} gap={10}>
-          <Checkbox size={"lg"}>
-            <h1>Today</h1>
-          </Checkbox>
-          <h1
-            style={{
-              backgroundColor: "red",
-              border: "2px solid red",
-              color: "white",
-              borderRadius: "10px",
-              padding: "5px",
-            }}
-          >
-            Category
-          </h1>
-        </Box>
       </Box>
     </>
   );

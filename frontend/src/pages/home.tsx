@@ -1,13 +1,13 @@
 import { Box } from "@chakra-ui/react";
 import MiddleBar from "./middleBar";
-import SideBarLeft from "./sideBarLeft";
+import SideBar from "./createCategory";
 
 export default function Home() {
   return (
     <>
       <Box display="flex" flexDirection="row">
         <Box>
-          <SideBarLeft />
+          <SideBar />
         </Box>
         <Box flex={1}>
           <MiddleBar />

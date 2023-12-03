@@ -1,20 +1,28 @@
 // PopupForm.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Api } from "../libs/api";
+import { ICategory } from "../interface/iMain";
 
-interface PopupFormProps {
+export interface PopupFormProps {
   onClose: () => void;
   onSubmit: (data: FormData) => void;
 }
 
-interface FormData {
+export interface FormData {
+  _id: string;
   description: string;
   category: string;
+  status: boolean;
+  date: Date;
 }
 
 const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState<FormData>({
+    _id: "",
     description: "",
     category: "",
+    status: false,
+    date: new Date(),
   });
 
   const handleInputChange = (
@@ -31,6 +39,17 @@ const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
     onSubmit(formData);
   };
 
+  const [category, setCategory] = useState<ICategory[]>([]);
+  const getCategory = async () => {
+    const response = await Api.get("/category");
+    const data = response.data;
+    console.log(data);
+    setCategory(data);
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
   return (
     <div className="popup">
       <form onSubmit={handleSubmit}>
@@ -52,9 +71,9 @@ const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
           onChange={handleInputChange}
           required
         >
-          <option value="category1">Category 1</option>
-          <option value="category2">Category 2</option>
-          <option value="category3">Category 3</option>
+          {category.map((item) => (
+            <option key={item.description}>{item.description}</option>
+          ))}
         </select>
 
         <button type="submit">Submit</button>
