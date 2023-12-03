@@ -2,7 +2,8 @@ import { Box, Button, Checkbox, Card } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import PopupTask from "./createTask";
 import { Api } from "../libs/api";
-import { get } from "mongoose";
+// import { get } from "mongoose";
+import { FormData } from "./createTask";
 
 export default function MiddleBar() {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -16,13 +17,13 @@ export default function MiddleBar() {
   };
 
   const handleSubmit = async (data: FormData) => {
-    const postTask = await Api.post("/create/task", data);
+    await Api.post("/create/task", data);
     console.log("Form Data:", data);
     // Close the popup after submission
     closePopup();
   };
-  const [tasks, setTask] = useState([]);
-  const getTask = async (data: FormData) => {
+  const [tasks, setTask] = useState<FormData[]>([]);
+  const getTask = async () => {
     try {
       const response = await Api.get("/task");
       const data = response.data;
@@ -33,7 +34,7 @@ export default function MiddleBar() {
     }
   };
   useEffect(() => {
-    getTask(data);
+    getTask();
   }, []);
   return (
     <>
@@ -57,7 +58,7 @@ export default function MiddleBar() {
         {/* Maping here */}
         {tasks.map((task) => (
           <div key={task._id}>
-            <Card>
+            <Card style={{ padding: "5px" }}>
               <p>Description: {task.description}</p>
               <p>Status: {task.status ? "Completed" : "Not Completed"}</p>
               <p>Category: {task.category}</p>

@@ -6,15 +6,21 @@ interface PopupFormProps {
   onSubmit: (data: FormData) => void;
 }
 
-interface FormData {
+export interface FormData {
+  _id: string,
   description: string;
   category: string;
+  status: boolean;
+  createdAt: string;
 }
 
 const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState<FormData>({
+    _id: "", 
     description: "",
     category: "",
+    status: false,
+    createdAt: "",
   });
 
   const handleInputChange = (
@@ -25,6 +31,7 @@ const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
       [e.target.name]: e.target.value,
     });
   };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
