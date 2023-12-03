@@ -4,10 +4,9 @@ import { categoryModel, taskModel } from "../db/main";
 class MainController {
   task = async (req: Request, res: Response) => {
     try {
-      const { description, status } = req.body;
-      const create = await taskModel.create({ description, status });
+      const { description, status, category } = req.body;
+      const create = await taskModel.create({ description, status ,category });
       console.log(create);
-      console.log(description, status);
       const createTask = await create.save();
       res.status(200).json(createTask);
     } catch (error) {

@@ -16,6 +16,10 @@ const taskSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    category: {
+        type: String,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now
