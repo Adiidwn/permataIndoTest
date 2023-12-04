@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, IconButton } from "@chakra-ui/react";
+import { Box, Button, IconButton } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { Api } from "../libs/api";
@@ -22,9 +22,24 @@ export default function SideBar() {
     closePopup();
   };
   const [category, setCategory] = useState<FormDataCategory[]>([]);
+  const handleDelete = async (data: FormDataCategory) => {
+    try {
+      const id = data._id;
+      await Api.delete(`/category/${id}`);
+
+      // After deletion, update the tasks state to reflect the changes
+      setCategory((prevTasks) => prevTasks.filter((t) => t._id !== data._id));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
   const getCategory = async () => {
     try {
-      const response = await Api.get("/category");
+      const response = await Api.get("/category", {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`,
+        },
+      });
       const data = response.data;
       setCategory(data);
     } catch (err) {
@@ -61,6 +76,7 @@ export default function SideBar() {
                 </Button>
 
                 <IconButton
+                  onClick={() => handleDelete(data)}
                   icon={<AiOutlineClose />}
                   size={"10px"}
                   aria-label={""}

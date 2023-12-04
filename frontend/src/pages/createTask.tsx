@@ -46,23 +46,36 @@ const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
 
   const [category, setCategory] = useState<ICategory[]>([]);
   const getCategory = async () => {
-    const response = await Api.get("/category");
-    const data = response.data;
-    console.log(data);
-    setCategory(data);
+    try {
+      const response = await Api.get("/category"); // Replace with your actual API endpoint
+      setCategory(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
   };
-
   useEffect(() => {
     getCategory();
   }, []);
   return (
-    <div className="popup">
+    <div
+      className="popup"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <form onSubmit={handleSubmit}>
         <label htmlFor="description">Description:</label>
         <input
           type="text"
+          style={{
+            borderRadius: "5px",
+            border: "1px solid black",
+            width: "100%",
+          }}
           id="description"
           name="description"
+          placeholder="write description here..."
           value={formData.description}
           onChange={handleInputChange}
           required
@@ -76,14 +89,16 @@ const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
           onChange={handleInputChange}
           required
         >
+          <option value={""}></option>
           {category.map((item) => (
             <option key={item.description}>{item.description}</option>
           ))}
         </select>
-
-        <button type="submit">Submit</button>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <button type="submit">Submit</button>
+          <button onClick={onClose}>Close</button>
+        </div>
       </form>
-      <button onClick={onClose}>Close</button>
     </div>
   );
 };

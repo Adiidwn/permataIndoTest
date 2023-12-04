@@ -22,19 +22,41 @@ export default function MiddleBar() {
     // Close the popup after submission
     closePopup();
   };
+  const [tasks, setTask] = useState<FormData[]>([]);
 
-  const [isDelete, setDelete] = useState(false);
-  const handleDelete = (data: FormData) => {
-    const id = data._id;
-    const deleteTask = Api.delete(`/task/${id}`);
+  // const [isDelete, setDelete] = useState(false);
+  const handleDelete = async (data: FormData) => {
+    try {
+      const id = data._id;
+      await Api.delete(`/task/${id}`);
 
-    setDelete(!isDelete);
+      // After deletion, update the tasks state to reflect the changes
+      setTask((prevTasks) => prevTasks.filter((t) => t._id !== data._id));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+  const handleCheckboxClick = async (task: FormData) => {
+    try {
+      const statusChecked = await Api.patch(`/task/${task._id}`, {
+        status: !task.status,
+      });
+      // Toggle the task.status
+      task.status = !task.status;
+      // Update the local state to trigger a re-render
+      setTask([...tasks]);
+    } catch (error) {
+      console.error("Error updating task status:", error);
+    }
   };
 
-  const [tasks, setTask] = useState<FormData[]>([]);
   const getTask = async () => {
     try {
-      const response = await Api.get("/task");
+      const response = await Api.get("/task", {
+        headers: {
+          Authorization: `Bearer ${localStorage.token}`,
+        },
+      });
       const data = response.data;
       setTask(data);
     } catch (err) {
@@ -75,60 +97,59 @@ export default function MiddleBar() {
         </Box>
         {/* Maping here */}
         {tasks.map((task) => (
-          <>
-            <div key={task._id}>
-              <Box
-                boxSize={"100%"}
-                display={"flex"}
-                flex={"column"}
-                alignItems={"center"}
-                gap={10}
+          <div key={task._id}>
+            <Box
+              boxSize={"100%"}
+              display={"flex"}
+              flex={"column"}
+              alignItems={"center"}
+              gap={10}
+            >
+              <Checkbox
+                mb={"10px"}
+                size={"lg"}
+                onChange={() => handleCheckboxClick(task)}
+                isChecked={task.status}
               >
-                <Checkbox mb={"10px"} size={"lg"}>
-                  <h1>{task.description}</h1>
-                </Checkbox>
-                <p hidden>
-                  Status: {task.status ? "Completed" : "Not Completed"}
-                </p>
                 <h1
                   style={{
-                    backgroundColor: task.status ? "green" : "red",
-                    border: "1px solid red",
-                    color: "white",
-                    borderRadius: "10px",
-                    padding: "5px",
-                    fontSize: "15px",
+                    color: task.status ? "red" : "black",
+                    textDecoration: task.status ? "line-through" : "none",
                   }}
                 >
-                  {task.category}
+                  {task.description}
                 </h1>
-                <IconButton
-                  icon={<AiOutlineClose />}
-                  size={"10px"}
-                  aria-label={""}
-                  onClick={() => handleDelete(task)}
-                />
-              </Box>
-            </div>
-          </>
-        ))}
-        {category.map((category) => (
-          <>
-            <div key={category._id}>
-              <h1
-                style={{
-                  backgroundColor: category.color,
-                  border: "1px solid ",
-                  color: "white",
-                  borderRadius: "10px",
-                  padding: "5px",
-                  fontSize: "15px",
-                }}
-              >
-                {category.description}
-              </h1>
-            </div>
-          </>
+              </Checkbox>
+              <p hidden>
+                Status: {task.status ? "Completed" : "Not Completed"}
+              </p>
+              {/* Find the corresponding category object based on the description */}
+              {category.map((cat) =>
+                cat.description === task.category ? (
+                  <h1
+                    key={cat._id}
+                    style={{
+                      backgroundColor: cat.color,
+                      border: "1px solid",
+                      color: "white",
+                      fontWeight: "bold",
+                      borderRadius: "10px",
+                      padding: "5px",
+                      fontSize: "15px",
+                    }}
+                  >
+                    {task.category}
+                  </h1>
+                ) : null
+              )}
+              <IconButton
+                icon={<AiOutlineClose />}
+                size={"10px"}
+                aria-label={""}
+                onClick={() => handleDelete(task)}
+              />
+            </Box>
+          </div>
         ))}
       </Box>
     </>

@@ -1,34 +1,57 @@
 "use client";
 
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
-  Flex,
   Box,
+  Button,
+  Flex,
   FormControl,
   FormLabel,
+  Heading,
   Input,
   InputGroup,
-  HStack,
   InputRightElement,
+  Link,
   Stack,
-  Button,
-  Heading,
   Text,
   useColorModeValue,
-  Link,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Api } from "../../libs/api";
 
+interface IRegist {
+  name: String;
+  pNumber: String;
+  email: String;
+  username: String;
+  password: String;
+}
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [form, setForm] = useState<IRegist>({
+    name: "",
+    pNumber: "",
+    email: "",
+    username: "",
+    password: "",
+  });
 
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    setForm({
+      ...form,
+      [event.target.name]: event.target.value,
+    });
+  }
   const handleSubmit = async () => {
-    // const register = await Api.post("/auth/register");
-    navigate("/auth/login");
+    const register = await Api.post("/auth/register", form);
+    console.log(register);
+    setForm(register.data);
+    navigate("/");
   };
+  console.log(form);
+
   return (
     <Flex
       minH={"100vh"}
@@ -55,29 +78,33 @@ export default function Register() {
             <Box>
               <FormControl id="Name" isRequired>
                 <FormLabel>Name</FormLabel>
-                <Input type="text" />
+                <Input name="name" onChange={handleChange} type="text" />
               </FormControl>
             </Box>
             <Box>
               <FormControl id="pNumber">
                 <FormLabel>Phone Number</FormLabel>
-                <Input type="text" />
+                <Input name="pNumber" onChange={handleChange} type="text" />
               </FormControl>
             </Box>
             <FormControl id="email" isRequired>
               <FormLabel>Email</FormLabel>
-              <Input type="email" />
+              <Input type="email" name="email" onChange={handleChange} />
             </FormControl>
             <Box>
               <FormControl id="username">
                 <FormLabel>Username</FormLabel>
-                <Input type="text" />
+                <Input name="username" onChange={handleChange} type="text" />
               </FormControl>
             </Box>
             <FormControl id="password" isRequired>
               <FormLabel>Password</FormLabel>
               <InputGroup>
-                <Input type={showPassword ? "text" : "password"} />
+                <Input
+                  onChange={handleChange}
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                />
                 <InputRightElement h={"full"}>
                   <Button
                     variant={"ghost"}
@@ -96,6 +123,7 @@ export default function Register() {
                 size="lg"
                 bg={"blue.400"}
                 color={"white"}
+                onClick={handleSubmit}
                 _hover={{
                   bg: "blue.500",
                 }}
@@ -106,7 +134,10 @@ export default function Register() {
             <Stack pt={6}>
               <Text align={"center"}>
                 Already a user?{" "}
-                <Link onClick={handleSubmit} color={"blue.400"}>
+                <Link
+                  onClick={() => navigate("/auth/login")}
+                  color={"blue.400"}
+                >
                   Login
                 </Link>
               </Text>

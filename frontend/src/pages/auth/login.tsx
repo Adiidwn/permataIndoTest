@@ -24,16 +24,22 @@ export default function Login() {
     password: "",
   });
 
-  const handleSubmit = async () => {
+  async function handleSubmit() {
     try {
-      const login = await Api.post("/auth/login", form);
-      localStorage.setItem("token", login.data.token);
-      setAuthToken(localStorage.token);
+      console.log("asdsad");
+
+      const response = await Api.post("/auth/login", form);
+      const { user, token } = response.data;
+      setAuthToken(token);
+      console.log("response nih", response);
+      console.log("token nih", token);
+
+      localStorage.setItem("token", JSON.stringify(user));
       navigate("/");
     } catch (error) {
       console.log("error not found ", error);
     }
-  };
+  }
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     setForm({

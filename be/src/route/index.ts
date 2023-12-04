@@ -14,7 +14,9 @@ router.get("/", (req,res) =>{
 router.get("/users", AuthController.getUsers)
 router.get("/users/:id", AuthController.getUserById)
 router.post("/auth/register", AuthController.register)
-router.post("/auth/login", authenticate, AuthController.login)
+router.post("/auth/login", AuthController.login)
+router.get("/auth/check", authenticate, AuthController.check)
+
 
 router.post("/create/task", taskController.task)
 router.get("/task", taskController.getTask)
