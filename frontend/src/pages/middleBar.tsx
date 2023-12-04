@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { Api } from "../libs/api";
 import PopupTask, { FormData } from "./createTask";
+import { FormDataCategory } from "./category";
 
 export default function MiddleBar() {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -21,6 +22,15 @@ export default function MiddleBar() {
     // Close the popup after submission
     closePopup();
   };
+
+  const [isDelete, setDelete] = useState(false);
+  const handleDelete = (data: FormData) => {
+    const id = data._id;
+    const deleteTask = Api.delete(`/task/${id}`);
+
+    setDelete(!isDelete);
+  };
+
   const [tasks, setTask] = useState<FormData[]>([]);
   const getTask = async () => {
     try {
@@ -28,12 +38,21 @@ export default function MiddleBar() {
       const data = response.data;
       setTask(data);
     } catch (err) {
-      throw new Error();
-      console.log(err);
+      console.error(err); // Log the error
+      throw new Error("Error fetching tasks"); // Throw a new error if needed
     }
   };
+  const [category, setCategory] = useState<FormDataCategory[]>([]);
+  const getCategory = async () => {
+    const response = await Api.get("/category");
+    const data = response.data;
+    console.log(data);
+    setCategory(data);
+  };
+
   useEffect(() => {
     getTask();
+    getCategory();
   }, [isPopupOpen]);
   return (
     <>
@@ -73,7 +92,7 @@ export default function MiddleBar() {
                 </p>
                 <h1
                   style={{
-                    backgroundColor: "red",
+                    backgroundColor: task.status ? "green" : "red",
                     border: "1px solid red",
                     color: "white",
                     borderRadius: "10px",
@@ -83,14 +102,31 @@ export default function MiddleBar() {
                 >
                   {task.category}
                 </h1>
-                <IconButton icon={<AiOutlineClose />} size={"10px"} />
+                <IconButton
+                  icon={<AiOutlineClose />}
+                  size={"10px"}
+                  aria-label={""}
+                  onClick={() => handleDelete(task)}
+                />
               </Box>
-              {/* <Card>
-                <p>Description: {task.description}</p>
-                
-                <p>Category: {task.category}</p>
-                <p hidden>Created At: {task.createdAt}</p>
-              </Card> */}
+            </div>
+          </>
+        ))}
+        {category.map((category) => (
+          <>
+            <div key={category._id}>
+              <h1
+                style={{
+                  backgroundColor: category.color,
+                  border: "1px solid ",
+                  color: "white",
+                  borderRadius: "10px",
+                  padding: "5px",
+                  fontSize: "15px",
+                }}
+              >
+                {category.description}
+              </h1>
             </div>
           </>
         ))}

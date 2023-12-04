@@ -1,7 +1,15 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { v4 as uuidv4, validate as uuidValidate } from "uuid";
 import { Iuser } from "../interfaces/Iuser";
 
+export interface ITask extends Document {
+    _id: string;
+    description: string;
+    status: boolean;
+    category: mongoose.Types.ObjectId | ICategory
+    createdAt: Date;
+    updatedAt: Date;
+}
 const taskSchema = new mongoose.Schema({
     _id: {
         required: true,
@@ -20,6 +28,7 @@ const taskSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+
     createdAt: {
         type: Date,
         default: Date.now
@@ -29,6 +38,13 @@ const taskSchema = new mongoose.Schema({
         default: Date.now
     }
 })
+
+export interface ICategory extends Document{
+    _id: string;
+    description: string;
+    color: string;
+    date: Date;  
+  }
 const categorySchema = new mongoose.Schema({
     _id: {
         required: true,
@@ -55,4 +71,4 @@ const categorySchema = new mongoose.Schema({
 
 
 export const taskModel = mongoose.model("Tasks", taskSchema)
-export const categoryModel = mongoose.model("Category", categorySchema)
+export const categoryModel = mongoose.model<ICategory>("Category", categorySchema)

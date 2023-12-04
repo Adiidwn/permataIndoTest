@@ -1,6 +1,6 @@
 import { Box } from "@chakra-ui/react";
 import MiddleBar from "./middleBar";
-import SideBar from "./createCategory";
+import SideBar from "./sideBar";
 
 export default function Home() {
   return (

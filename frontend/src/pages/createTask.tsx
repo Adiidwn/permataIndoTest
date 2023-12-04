@@ -11,7 +11,7 @@ export interface PopupFormProps {
 export interface FormData {
   _id: string;
   description: string;
-  category: string;
+  category: ICategory;
   status: boolean;
   date: Date;
 }
@@ -20,7 +20,12 @@ const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState<FormData>({
     _id: "",
     description: "",
-    category: "",
+    category: {
+      description: "",
+      color: "",
+      date: new Date(),
+      _id: "",
+    },
     status: false,
     date: new Date(),
   });
@@ -67,7 +72,7 @@ const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
         <select
           id="category"
           name="category"
-          value={formData.category}
+          value={formData?.category.description}
           onChange={handleInputChange}
           required
         >
