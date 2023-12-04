@@ -1,5 +1,15 @@
 // PopupForm.tsx
 import React, { useState } from "react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+} from "@chakra-ui/react";
 
 interface PopupFormProps {
   onClose: () => void;
@@ -7,7 +17,7 @@ interface PopupFormProps {
 }
 
 export interface FormData {
-  _id: string,
+  _id: string;
   description: string;
   category: string;
   status: boolean;
@@ -16,7 +26,7 @@ export interface FormData {
 
 const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState<FormData>({
-    _id: "", 
+    _id: "",
     description: "",
     category: "",
     status: false,
@@ -24,7 +34,9 @@ const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
   });
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     setFormData({
       ...formData,
@@ -32,42 +44,65 @@ const PopupTask: React.FC<PopupFormProps> = ({ onClose, onSubmit }) => {
     });
   };
 
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+    onClose(); // Close the modal after submission
   };
 
   return (
-    <div className="popup">
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="description">Description:</label>
-        <input
-          type="text"
-          id="description"
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-          required
-        />
+    <Modal isOpen={true} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Create Task</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="description">Description :</label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              required
+              style={{
+                width: "100%",
+                marginBottom: "10px",
+                background: "#EDF2F7",
+                resize: "none",
+              }}
+            />
 
-        <label htmlFor="category">Category:</label>
-        <select
-          id="category"
-          name="category"
-          value={formData.category}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="category1">Category 1</option>
-          <option value="category2">Category 2</option>
-          <option value="category3">Category 3</option>
-        </select>
+            <label htmlFor="category">Category : </label>
+            <select
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              required
+              style={{
+                marginBottom: "10px",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              <option value="category1">Category 1</option>
+              <option value="category2">Category 2</option>
+              <option value="category3">Category 3</option>
+            </select>
+          </form>
+        </ModalBody>
 
-        <button type="submit">Submit</button>
-      </form>
-      <button onClick={onClose}>Close</button>
-    </div>
+        <ModalFooter>
+          <Button colorScheme="blue" mr={3} onClick={onClose}>
+            Close
+          </Button>
+          <Button type="submit" onClick={handleSubmit} colorScheme="green">
+            Submit
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

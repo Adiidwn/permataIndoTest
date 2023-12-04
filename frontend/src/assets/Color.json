@@ -1,0 +1,22 @@
+[
+  { "idColor": 1, "color": "Red" },
+  { "idColor": 2, "color": "Blue" },
+  { "idColor": 3, "color": "Green" },
+  { "idColor": 4, "color": "Yellow" },
+  { "idColor": 5, "color": "Purple" },
+  { "idColor": 6, "color": "Orange" },
+  { "idColor": 7, "color": "Pink" },
+  { "idColor": 8, "color": "Brown" },
+  { "idColor": 9, "color": "Gray" },
+  { "idColor": 10, "color": "Cyan" },
+  { "idColor": 11, "color": "Magenta" },
+  { "idColor": 12, "color": "Teal" },
+  { "idColor": 13, "color": "Lime" },
+  { "idColor": 14, "color": "Indigo" },
+  { "idColor": 15, "color": "Amber" },
+  { "idColor": 16, "color": "DeepPurple" },
+  { "idColor": 17, "color": "LightGreen" },
+  { "idColor": 18, "color": "DeepOrange" },
+  { "idColor": 19, "color": "LightBlue" },
+  { "idColor": 20, "color": "Lime" }
+]

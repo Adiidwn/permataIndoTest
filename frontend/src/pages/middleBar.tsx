@@ -4,6 +4,7 @@ import PopupTask from "./createTask";
 import { Api } from "../libs/api";
 // import { get } from "mongoose";
 import { FormData } from "./createTask";
+import { fetchColors } from "../components/AddCategory";
 
 export default function MiddleBar() {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -28,13 +29,14 @@ export default function MiddleBar() {
       const response = await Api.get("/task");
       const data = response.data;
       setTask(data);
+      // fetchColors()
     } catch (err) {
       throw new Error();
       console.log(err);
     }
   };
   useEffect(() => {
-    getTask();
+   getTask();
   }, []);
   return (
     <>
@@ -56,16 +58,19 @@ export default function MiddleBar() {
           )}
         </Box>
         {/* Maping here */}
-        {tasks.map((task) => (
-          <div key={task._id}>
-            <Card style={{ padding: "5px" }}>
-              <p>Description: {task.description}</p>
-              <p>Status: {task.status ? "Completed" : "Not Completed"}</p>
-              <p>Category: {task.category}</p>
-              <p>Created At: {task.createdAt}</p>
-            </Card>
-          </div>
-        ))}
+        <div style={{ display: "flex", flexWrap: "wrap", width: "100%", gap:"40px" }}>
+          {tasks.map((task) => (
+            <div key={task._id}>
+              <Card style={{ padding: "20px" }}>
+                <p>Description: {task.description}</p>
+                <p>Status: {task.status ? "Completed" : "Not Completed"}</p>
+                <p>Category: {task.category}</p>
+                <p>Created At: {task.createdAt}</p>
+              </Card>
+            </div>
+          ))}
+        </div>
+        <div style={{padding:"15px"}}>
         <Box boxSize={"100%"} display={"flex"} flex={"column"} gap={10}>
           <Checkbox size={"lg"}>
             <h1>Today</h1>
@@ -82,6 +87,7 @@ export default function MiddleBar() {
             Category
           </h1>
         </Box>
+        </div>
       </Box>
     </>
   );

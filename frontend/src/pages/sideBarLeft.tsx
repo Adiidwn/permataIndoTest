@@ -14,13 +14,21 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { ReactText } from "react";
+import { ReactText, useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import { FiMenu } from "react-icons/fi";
 import { Button } from "@chakra-ui/react";
+import CategoryPopUp from "../components/AddCategory";
+import { Api } from "../libs/api";
+import { getCategoryData } from "../components/AddCategory";
 
 interface LinkItemProps {
   name: string;
+}
+
+export interface Category {
+  color: number;
+  description: string;
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: "All Task" },
@@ -33,6 +41,7 @@ const LinkItems: Array<LinkItemProps> = [
 
 export default function SideBarLeft() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Box minH="100vh">
       <SidebarContent
@@ -65,6 +74,40 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const [isPopupOpen, setPopupOpen] = useState(false);
+  const [category, setCategory] = useState<Category[]>([])
+  const openPopup = () => {
+    setPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setPopupOpen(false);
+  };
+  const handleCategorySubmit = async (categoryData: Category) => {
+    try {
+      await Api.post("/create/category", categoryData);
+      console.log("Submitted category data:", categoryData);
+    } catch (error) {
+      console.error("Error submitting category data:", error);
+
+    }
+  };
+  
+
+  const fetchCategoryData = async () => {
+    try {
+      const categoryData = (await getCategoryData).data;
+      setCategory(categoryData)
+      console.log("Category data:", categoryData);
+    } catch (err) {
+      console.error();
+    }
+  };
+
+  useEffect(()=>{
+    fetchCategoryData()
+  }, [category])
+
   return (
     <Box
       bg={useColorModeValue("white", "gray.900")}
@@ -84,18 +127,32 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       {LinkItems.map((link) => (
         <NavItem key={link.name}>{link.name}</NavItem>
       ))}
-      <Button bg={"white"} color={"gray"} ml={"10px"} w={"85%"}>
+
+{category.map((link) => (
+        <NavItem key={link.description}>{link.description}</NavItem>
+      ))}
+      <Button
+        bg={"white"}
+        onClick={openPopup}
+        color={"gray"}
+        ml={"10px"}
+        w={"85%"}
+      >
         +New Category
       </Button>
+      {isPopupOpen && (
+        <CategoryPopUp onClose={closePopup} onSubmit={handleCategorySubmit} />
+      )}
     </Box>
   );
 };
 
 interface NavItemProps extends FlexProps {
-  icon: IconType;
+  icon?: IconType;
   children: ReactText;
 }
 const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+  
   return (
     <Box
       as="a"
